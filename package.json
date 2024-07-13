@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "npx tsc",
     "compile": "npx tsc",
     "start": "node ./dist/index.js"
   },

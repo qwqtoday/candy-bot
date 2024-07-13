@@ -1,0 +1,7 @@
+# Regeneratable folders
+node_modules/
+dist/
+drizzle/
+
+# Config
+drizzle.config.ts
