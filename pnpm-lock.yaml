@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@jsprismarine/brigadier':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^0.6.0
+        version: 0.6.0
       better-sqlite3:
         specifier: ^11.1.2
         version: 11.1.2
@@ -43,8 +43,8 @@ packages:
     resolution: {integrity: sha512-b4M/tqRzJ4jGU91BiwCsLTqChveUEyFK3qY2wGfZ0zBswIBZjAxopx5CYt5wzZFKuN15HqRDYXQbztttuIC3nA==}
     engines: {node: '>=0.8.0'}
 
-  '@azure/msal-node@2.10.0':
-    resolution: {integrity: sha512-JxsSE0464a8IA/+q5EHKmchwNyUFJHtCH00tSXsLaOddwLjG6yVvTH6lGgPcWMhO7YWUXj/XVgVgeE9kZtsPUQ==}
+  '@azure/msal-node@2.11.0':
+    resolution: {integrity: sha512-yNRCp4Do4CGSBe1WXq4DWhfa/vYZCUgGrweYLC5my/6eDnYMt0fYGPHuTMw0iRslQGXF3CecGAxXp7ab57V4zg==}
     engines: {node: '>=16'}
 
   '@esbuild-kit/core-utils@3.3.2':
@@ -323,8 +323,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@jsprismarine/brigadier@0.5.0':
-    resolution: {integrity: sha512-pxUxmSJvQsbMfmVW6fAy3VVs+UJmWLbVozMM1Y8u4wkxcuec4RiXMycm7HZZvCtZRDVAFrz2tq/bkiJMU8XgJg==}
+  '@jsprismarine/brigadier@0.6.0':
+    resolution: {integrity: sha512-dHWGzEed6bhzyKlICd22/3XA8kFvUMtAISFfnH7z28ha3KKDTwHEdGpsTmia973af1VANzbRLUrocGpn2JESTA==}
 
   '@types/better-sqlite3@7.6.11':
     resolution: {integrity: sha512-i8KcD3PgGtGBLl3+mMYA8PdKkButvPyARxA7IQAd6qeslht13qxb1zzO8dRCtE7U3IoJS782zDBAeoKiM695kg==}
@@ -702,6 +702,7 @@ packages:
 
   prismarine-biome@1.3.0:
     resolution: {integrity: sha512-GY6nZxq93mTErT7jD7jt8YS1aPrOakbJHh39seYsJFXvueIOdHAmW16kYQVrTVMW5MlWLQVxV/EquRwOgr4MnQ==}
+    version: 1.3.0
     peerDependencies:
       minecraft-data: ^3.0.0
       prismarine-registry: ^1.1.0
@@ -903,7 +904,7 @@ snapshots:
 
   '@azure/msal-common@14.13.0': {}
 
-  '@azure/msal-node@2.10.0':
+  '@azure/msal-node@2.11.0':
     dependencies:
       '@azure/msal-common': 14.13.0
       jsonwebtoken: 9.0.2
@@ -1054,7 +1055,7 @@ snapshots:
   '@esbuild/win32-x64@0.19.12':
     optional: true
 
-  '@jsprismarine/brigadier@0.5.0': {}
+  '@jsprismarine/brigadier@0.6.0': {}
 
   '@types/better-sqlite3@7.6.11':
     dependencies:
@@ -1421,7 +1422,7 @@ snapshots:
 
   prismarine-auth@2.5.0:
     dependencies:
-      '@azure/msal-node': 2.10.0
+      '@azure/msal-node': 2.11.0
       '@xboxreplay/xboxlive-auth': 3.3.3(debug@4.3.5)
       debug: 4.3.5
       jose: 4.15.9

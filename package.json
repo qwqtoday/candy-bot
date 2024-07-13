@@ -12,7 +12,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@jsprismarine/brigadier": "^0.5.0",
+    "@jsprismarine/brigadier": "^0.6.0",
     "better-sqlite3": "^11.1.2",
     "drizzle-orm": "^0.32.0",
     "mineflayer": "github:qwqtoday/mineflayer#modded",
