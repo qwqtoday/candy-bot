@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import * as logger from "../worker_threads/logger";
 import { getCommandDispatcher } from "./command/command";
 import { loadPlugins } from "./plugin/plugin";
+import { getUserLevelByUUID } from "../db/queries/users_queries";
 
 const WHISPER_MESSAGE_REGEX = /([a-zA-Z]+) -> [a-zA-Z]+: (.+)/g;
 
@@ -50,7 +51,7 @@ export async function startBot(worker_id: number) {
     runningBots.delete(worker_id);
   });
 
-  bot.on("messagestr", (msg) => {
+  bot.on("messagestr", async (msg) => {
     const match_res = WHISPER_MESSAGE_REGEX.exec(msg);
     if (match_res === null) return;
     const sender = match_res[1];
@@ -63,7 +64,9 @@ export async function startBot(worker_id: number) {
       return;
     }
     
-    if (senderUUID !== worker.owner) {
+    const userLevel = await getUserLevelByUUID(senderUUID)
+
+    if (senderUUID !== worker.owner && (userLevel === null || userLevel === 0)) {
       bot.whisper(sender, "You don't have permission to use this bot.")
       return;
     }
