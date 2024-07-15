@@ -44,7 +44,7 @@ commandDispatcher.register(
         })
 )
 commandDispatcher.register(
-    literal<Object>("bots")
+    literal<Object>("workers")
         .executes(async (context: CommandContext<Object>) => {
             const workers = await getWorkers()
             console.log("Workers:")
