@@ -1,41 +1,34 @@
+import { CommandSyntaxException, SimpleCommandExceptionType } from "@jsprismarine/brigadier";
+import { commandDispatcher } from "./console/commands";
 import { db } from "./db";
 import workers from "./db/schema/workers";
-import { startWorkerThread, WorkerThread } from "./worker_threads/worker";
+import { addWorkerBot, startWorkerThread, WorkerThread } from "./worker_threads/worker";
+import readline from "readline";
 
-const MAX_WORKER_COUNT = 10;
-const MIN_WORKER_BOT_COUNT = 3;
-let workerBotCount = 0;
-const workerThreads: WorkerThread[] = [];
 
-async function startWorkerBot(worker_id: number) {
-  workerBotCount += 1;
-  if (
-    workerThreads.length < MAX_WORKER_COUNT &&
-    Math.ceil(workerBotCount / MIN_WORKER_BOT_COUNT) > workerThreads.length
-  ) {
-    workerThreads.push(startWorkerThread(workerThreads.length + 1));
-  }
 
-  let minWorkerThread: WorkerThread;
-  for (let workerThread of workerThreads) {
-    minWorkerThread =
-      minWorkerThread === undefined ||
-      workerThread.botCount < minWorkerThread.botCount
-        ? workerThread
-        : minWorkerThread;
-  }
-
-  minWorkerThread.addBot(worker_id);
-}
 
 async function main() {
-  const _workers = await db
-    .select({
-      id: workers.id,
-    })
-    .from(workers);
+    console.log("Starting all bots...")
+    const _workers = await db
+        .select({
+            id: workers.id,
+        })
+        .from(workers);
 
-  _workers.forEach((worker) => startWorkerBot(worker.id));
+    _workers.forEach((worker) => addWorkerBot(worker.id));
+
+    const rl = readline.createInterface(process.stdin, process.stdout);
+
+    rl.on("line", (line) => {
+        try {
+            commandDispatcher.execute(line, {})
+        } catch (err) {
+            if (err instanceof Error) {
+                console.error(err.message)
+            }
+        }
+    })
 }
 
 main();

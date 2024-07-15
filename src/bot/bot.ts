@@ -6,6 +6,7 @@ import * as logger from "../worker_threads/logger";
 import { getCommandDispatcher } from "./command/command";
 import { loadPlugins } from "./plugin/plugin";
 import { getUserLevelByUUID } from "../db/queries/users_queries";
+import { isMainThread, parentPort } from "worker_threads";
 
 const WHISPER_MESSAGE_REGEX = /([a-zA-Z]+) -> [a-zA-Z]+: (.+)/g;
 
@@ -18,14 +19,14 @@ export async function startBot(worker_id: number) {
   if (runningBots.has(worker_id)) return;
 
   const worker = await db
-        .select({
-          name: workers.name,
-          owner: workers.owner,
-        })
-        .from(workers)
-        .where(eq(workers.id, worker_id))
-        .get();
-  
+    .select({
+      name: workers.name,
+      owner: workers.owner,
+    })
+    .from(workers)
+    .where(eq(workers.id, worker_id))
+    .get();
+
   const bot = createBot({
     host: "cn3.molean.com",
     port: 25565,
@@ -33,7 +34,7 @@ export async function startBot(worker_id: number) {
     auth: "microsoft",
     viewDistance: 10,
     onMsaCode: async (data) => {
-      
+
 
       logger.info(
         `To sign in worker ${worker.name} (${worker_id}), use a web browser to open the page https://www.microsoft.com/link and use the code ${data.user_code} or visit http://microsoft.com/link?otc=${data.user_code}`,
@@ -45,10 +46,20 @@ export async function startBot(worker_id: number) {
 
   bot.once("spawn", () => {
     logger.info(`Worker ${worker_id} is ready`);
+    if (!isMainThread) {
+      parentPort.postMessage({
+        type: "started-bot",
+        id: worker_id
+      })
+    }
   });
 
+  bot.once("error", (err) => {
+    stopBot(worker_id)
+  })
+
   bot.once("end", () => {
-    runningBots.delete(worker_id);
+    stopBot(worker_id)
   });
 
   bot.on("messagestr", async (msg) => {
@@ -63,14 +74,14 @@ export async function startBot(worker_id: number) {
       bot.whisper(sender, "We aren't able to find your uuid.")
       return;
     }
-    
+
     const userLevel = await getUserLevelByUUID(senderUUID)
 
     if (senderUUID !== worker.owner && (userLevel === null || userLevel === 0)) {
       bot.whisper(sender, "You don't have permission to use this bot.")
       return;
     }
-    
+
     try {
       commandDispatcher.execute(message, {
         senderName: sender,
@@ -89,5 +100,13 @@ export async function stopBot(worker_id: number) {
   const bot = bots[worker_id];
   if (bot !== null || bot !== undefined) {
     bot.end();
+  }
+  delete bots[worker_id]
+
+  if (!isMainThread) {
+    parentPort.postMessage({
+      type: "bot-ended",
+      id: worker_id
+    })
   }
 }

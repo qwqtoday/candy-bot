@@ -5,7 +5,6 @@ import look from "./commands/look";
 import tp from "./commands/tp";
 import placeBlock from "./commands/placeBlock";
 import ci from "./commands/ci";
-import admin from "./commands/admin";
 
 export interface CommandSource {
   senderName: string;
@@ -23,7 +22,6 @@ const commands: Command[] = [
   tp,
   placeBlock,
   ci,
-  admin
 ] as const
 
 export function getCommandDispatcher(): CommandDispatcher<CommandSource> {
