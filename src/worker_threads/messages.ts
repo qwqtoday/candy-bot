@@ -1,4 +1,4 @@
-export type MainThreadMessage = StartBotMessage;
+export type MainThreadMessage = StartBotMessage | StopBotMessage;
 export type WorkerMessage = BotEndedMessage | StartedBotMessage;
 
 export interface BaseMessage {
@@ -9,6 +9,11 @@ export interface BaseMessage {
 export interface StartBotMessage extends BaseMessage {
   type: "start-bot";
   id: number;
+}
+
+export interface StopBotMessage extends BaseMessage {
+  type: "stop-bot"
+  id: number
 }
 
 export interface StartedBotMessage extends BaseMessage {

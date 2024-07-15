@@ -4,6 +4,7 @@ import { getUser, getUsers } from "../db/queries/users_queries";
 import { addWorker, removeWorker } from "../db/controllers/workers_controller";
 import { addWorkerBot, removeWorkerBot } from "../worker_threads/worker";
 import { getWorkers } from "../db/queries/workers_queries";
+import { addUser } from "../db/controllers/users_controller";
 
 export const commandDispatcher = new CommandDispatcher<Object>()
 
@@ -56,6 +57,16 @@ commandDispatcher.register(
         })
 )
 
+commandDispatcher.register(
+    literal<Object>("add-user")
+        .then(
+            argument("uuid", string())
+                .executes(async (context: CommandContext<Object>) => {
+                    const uuid = context.getArgument("uuid")
+                    await addUser(uuid)
+                })
+        )
+)
 commandDispatcher.register(
     literal<Object>("users")
         .executes(async (context: CommandContext<Object>) => {

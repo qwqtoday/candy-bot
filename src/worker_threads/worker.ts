@@ -8,6 +8,7 @@ export interface WorkerThread {
     botCount: number;
 
     startBot: (worker_id: number) => void;
+    stopBot: (worker_id: number) => void;
 }
 
 export interface WorkerBot {
@@ -48,6 +49,12 @@ export function startWorkerThread(workerThreadId: number): WorkerThread {
                 id: worker_id,
             });
         },
+        stopBot(worker_id: number) {
+            _worker.postMessage({
+                type: "stop-bot",
+                id: worker_id
+            })
+        }
     };
 
     workerThread._worker.on("message", (msg: WorkerMessage) => {
@@ -101,6 +108,10 @@ export async function addWorkerBot(worker_id: number) {
 }
 
 export async function removeWorkerBot(worker_id: number) {
+    if (workerBots[worker_id] !== undefined || workerBots[worker_id] !== null) {
+        workerBots[worker_id].workerThread?.stopBot(worker_id)
+        workerBots[worker_id].workerThread = null
+    }
     delete workerBots[worker_id]
 }
 
