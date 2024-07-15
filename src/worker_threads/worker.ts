@@ -22,7 +22,7 @@ const MIN_WORKER_BOT_COUNT = 3;
 
 
 const workerThreads: WorkerThread[] = [];
-const workerBots: WorkerBot[] = [];
+const workerBots: { [id: number]: WorkerBot } = {};
 
 
 let workerBotCount = 0;
@@ -40,7 +40,7 @@ export function startWorkerThread(workerThreadId: number): WorkerThread {
         _worker: _worker,
         botCount: 0,
         startBot(worker_id: number) {
-            const workerBot = workerBots.find((workerBot) => workerBot.worker_id === worker_id)
+            const workerBot = workerBots[worker_id]
             workerBot.workerThread = workerThread
 
             _worker.postMessage({
@@ -54,7 +54,7 @@ export function startWorkerThread(workerThreadId: number): WorkerThread {
         switch (true) {
             case msg.type === "bot-ended":
                 {
-                    const workerBot = workerBots.find((workerBot) => workerBot.worker_id === msg.id)
+                    const workerBot = workerBots[msg.id]
                     workerBot.workerThread = null
                     workerBot.state = "stopped"
 
@@ -63,7 +63,7 @@ export function startWorkerThread(workerThreadId: number): WorkerThread {
                 break;
             case msg.type === "started-bot":
                 {
-                    const workerBot = workerBots.find((workerBot) => workerBot.worker_id === msg.id)
+                    const workerBot = workerBots[msg.id]
                     workerBot.state = "running"
                 }
                 break;
@@ -93,11 +93,15 @@ export async function addWorkerBot(worker_id: number) {
                 : minWorkerThread;
     }
 
-    workerBots.push({
+    workerBots[worker_id] = {
         worker_id: worker_id,
         state: "stopped",
         workerThread: null
-    })
+    }
+}
+
+export async function removeWorkerBot(worker_id: number) {
+    delete workerBots[worker_id]
 }
 
 function getSmallestWorkerThread(): WorkerThread {
@@ -106,7 +110,7 @@ function getSmallestWorkerThread(): WorkerThread {
 
 if (isMainThread) {
     setInterval(() => {
-        const stoppedWorkerBots = workerBots.filter(workerBot => workerBot.state === "stopped");
+        const stoppedWorkerBots = Object.values(workerBots).filter(workerBot => workerBot.state === "stopped");
         if (stoppedWorkerBots.length === 0) return;
 
         const stoppedWorkerBot = stoppedWorkerBots[Math.floor(Math.random() * stoppedWorkerBots.length)]
