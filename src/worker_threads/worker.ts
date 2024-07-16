@@ -130,7 +130,7 @@ if (isMainThread) {
             const workerThread = getSmallestWorkerThread()
             workerThread.startBot(stoppedWorkerBot.worker_id)
         }
-    }, 15000)
+    }, 5000)
 }
 
 if (!isMainThread) {
@@ -140,6 +140,11 @@ if (!isMainThread) {
             case msg.type === "start-bot":
                 {
                     startBot((msg as StartBotMessage).id)
+                }
+                break;
+            case msg.type === "stop-bot":
+                {
+                    stopBot(msg.id)
                 }
                 break;
         }

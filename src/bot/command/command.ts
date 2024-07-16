@@ -5,10 +5,13 @@ import look from "./commands/look";
 import tp from "./commands/tp";
 import placeBlock from "./commands/placeBlock";
 import ci from "./commands/ci";
+import TaskManager from "../task/TaskManager";
+import toss from "./commands/toss";
 
 export interface CommandSource {
   senderName: string;
   bot: Bot;
+  taskManager: TaskManager
 }
 
 export interface Command {
@@ -22,6 +25,7 @@ const commands: Command[] = [
   tp,
   placeBlock,
   ci,
+  toss
 ] as const
 
 export function getCommandDispatcher(): CommandDispatcher<CommandSource> {
