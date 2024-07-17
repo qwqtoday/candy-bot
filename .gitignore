@@ -3,5 +3,5 @@ node_modules/
 dist/
 drizzle/
 
-# Data files
-sqlite.db
+# Data folder
+data/
