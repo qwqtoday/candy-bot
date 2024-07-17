@@ -4,7 +4,7 @@ import { getUser, getUsers } from "../db/queries/users_queries";
 import { addWorker, removeWorker } from "../db/controllers/workers_controller";
 import { addWorkerBot, removeWorkerBot } from "../worker_threads/worker";
 import { getWorkers } from "../db/queries/workers_queries";
-import { addUser } from "../db/controllers/users_controller";
+import { addUser, setUserLevel } from "../db/controllers/users_controller";
 
 export const commandDispatcher = new CommandDispatcher<Object>()
 
@@ -64,7 +64,25 @@ commandDispatcher.register(
                 .executes(async (context: CommandContext<Object>) => {
                     const uuid = context.getArgument("uuid")
                     await addUser(uuid)
+                    console.log(`Added user ${uuid}`)
                 })
+        )
+)
+
+commandDispatcher.register(
+    literal<Object>("set-user-level")
+        .then(
+            argument("uuid", string())
+                .then(
+                    argument("level", integer(0, Infinity))
+                        .executes(async (context: CommandContext<Object>) => {
+                            const uuid = context.getArgument("uuid")
+                            const level = context.getArgument("level")
+
+                            await setUserLevel(uuid, level)
+                            console.log(`Setted user ${uuid}'s level to ${level}`)
+                        })
+                )
         )
 )
 commandDispatcher.register(
