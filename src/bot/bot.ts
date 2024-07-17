@@ -56,6 +56,7 @@ export async function startBot(worker_id: number) {
                 `To sign in worker ${worker.name} (${worker_id}), use a web browser to open the page https://www.microsoft.com/link and use the code ${data.user_code} or visit http://microsoft.com/link?otc=${data.user_code}`,
             );
         },
+        profilesFolder: "./cache/"
     });
 
     bot.worker_id = worker_id
