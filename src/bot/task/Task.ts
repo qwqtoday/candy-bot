@@ -1,12 +1,12 @@
 import { clear } from "console"
 import { Bot } from "mineflayer"
 import { clearInterval } from "timers"
+import { WorkerTaskConfig } from "../config/WorkerConfig"
 
 
 export interface TaskInfo {
     name: string
 
-    defaultDelay: number
     minDelay: number
     maxDelay: number
 }
@@ -23,46 +23,47 @@ export abstract class AbstractTask<T> {
 
 
     // Public by getter and setter
-    private _enabled: boolean
-    private _delay: number
-
+    private _config: WorkerTaskConfig<T>
 
     // Private
     private taskTimer: NodeJS.Timeout
 
 
-    protected constructor(bot: Bot, config: T, info: TaskInfo) {
+    protected constructor(bot: Bot, config: WorkerTaskConfig<T>, info: TaskInfo) {
         this.bot = bot
-        this.config = config
+        this._config = config
+        this.config = this._config.config
         this.info = info
 
-        this._enabled = false
-        this.delay = info.defaultDelay
-        this.taskTimer = null
+        if (this.enabled) {
+            bot.once("spawn", () => this.enable())
+        }
     }
 
     get enabled() {
-        return this._enabled
+        return this._config.enabled
     }
 
     set enabled(v: boolean) {
         if (this.enabled === v)
             return;
 
-        this._enabled = v
+        this._config.enabled = v
 
         if (v)
             this.enable()
         else
             this.disable()
+
+        this.bot.saveWorkerConfig()
     }
 
     get delay() {
-        return this._delay
+        return this._config.delay
     }
 
     set delay(v: number) {
-        if (this._delay === v)
+        if (this._config.delay === v)
             return;
 
         if (v > this.info.maxDelay)
@@ -70,12 +71,14 @@ export abstract class AbstractTask<T> {
         if (v < this.info.minDelay)
             this.delay = this.info.minDelay
         else
-            this._delay = v
+            this._config.delay = v
 
         if (this.enabled) {
             this.disable()
             this.enable()
         }
+
+        this.bot.saveWorkerConfig()
     }
 
     private enable() {

@@ -1,5 +1,6 @@
 import { Bot, Chest } from "mineflayer";
 import { AbstractTask } from "../Task";
+import { WorkerTaskConfig } from "../../config/WorkerConfig";
 
 export interface CiGetTossTaskConfig {
     item: string
@@ -10,11 +11,15 @@ export default class CiGetTossTask extends AbstractTask<CiGetTossTaskConfig> {
 
     tickHandler: () => Promise<void>
 
-    constructor(bot: Bot, config: CiGetTossTaskConfig = null) {
+    constructor(bot: Bot, config: WorkerTaskConfig<CiGetTossTaskConfig>) {
         if (config === null || config === undefined) {
             config = {
-                item: null,
-                count: 0
+                enabled: false,
+                delay: 1000,
+                config: {
+                    item: null,
+                    count: 0
+                }
             }
         }
 
@@ -23,7 +28,6 @@ export default class CiGetTossTask extends AbstractTask<CiGetTossTaskConfig> {
             config,
             {
                 name: "ciGetToss",
-                defaultDelay: 1000,
                 minDelay: 750,
                 maxDelay: Infinity
             })

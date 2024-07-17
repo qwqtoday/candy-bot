@@ -1,5 +1,6 @@
 import { Bot, Chest } from "mineflayer";
 import { AbstractTask } from "../Task";
+import { WorkerTaskConfig } from "../../config/WorkerConfig";
 
 export interface CiPutTaskConfig {
     items: Set<string>
@@ -9,11 +10,19 @@ export default class CiPutTask extends AbstractTask<CiPutTaskConfig> {
 
     windowOpenHandler: (window: Chest) => Promise<void>
 
-    constructor(bot: Bot, config: CiPutTaskConfig = null) {
+    constructor(bot: Bot, config: WorkerTaskConfig<CiPutTaskConfig> = null) {
         if (config === null || config === undefined) {
             config = {
-                items: new Set()
+                enabled: false,
+                delay: 1000,
+                config: {
+                    items: new Set()
+                }
             }
+        }
+
+        if (config.config.items instanceof Array) {
+            config.config.items = new Set(config.config.items)
         }
 
         super(
@@ -21,7 +30,6 @@ export default class CiPutTask extends AbstractTask<CiPutTaskConfig> {
             config,
             {
                 name: "ciPut",
-                defaultDelay: 1000,
                 minDelay: 750,
                 maxDelay: Infinity
             })

@@ -19,3 +19,13 @@ export async function getWorkers() {
         .from(workers)
         .all()
 }
+
+export async function getWorkerConfig(worker_id: number) {
+    return db
+        .select({
+            config: workers.config
+        })
+        .from(workers)
+        .where(eq(workers.id, worker_id))
+        .get().config
+}

@@ -1,5 +1,3 @@
-import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
-import { SQLiteTable } from "drizzle-orm/sqlite-core";
 import {
   sqliteTable,
   text,

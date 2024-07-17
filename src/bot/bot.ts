@@ -8,6 +8,9 @@ import { loadPlugins } from "./plugin/plugin";
 import { getUserLevelByUUID } from "../db/queries/users_queries";
 import { isMainThread, parentPort } from "worker_threads";
 import TaskManager from "./task/TaskManager";
+import WorkerConfig from "./config/WorkerConfig";
+import createWorkerConfig from "./config/createWorkerConfig";
+import { setWorkerConfig } from "../db/controllers/workers_controller";
 
 const WHISPER_MESSAGE_REGEX = /([a-zA-Z]+) -> [a-zA-Z]+: (.+)/g;
 
@@ -23,10 +26,23 @@ export async function startBot(worker_id: number) {
         .select({
             name: workers.name,
             owner: workers.owner,
+            config: workers.config
         })
         .from(workers)
         .where(eq(workers.id, worker_id))
         .get();
+
+    let config: WorkerConfig
+    if (worker.config === null) {
+        config = createWorkerConfig()
+    } else {
+        try {
+            config = JSON.parse(worker.config)
+        } catch {
+            logger.error(`Worker ${worker_id} failed to parse config from database, resetting the config to default.`)
+            config = createWorkerConfig()
+        }
+    }
 
     const bot = createBot({
         host: "ab.natoriqct.xyz",
@@ -43,9 +59,19 @@ export async function startBot(worker_id: number) {
     });
 
     bot.worker_id = worker_id
+    bot.saveWorkerConfig = async () => {
+        setWorkerConfig(worker_id, JSON.stringify(config, (key, value) => {
+            if (value instanceof Set) {
+                return Array.from(value)
+            }
+            return value
+        }))
+    }
+
+    bot.saveWorkerConfig()
 
     loadPlugins(bot)
-    const taskManager = new TaskManager(bot)
+    const taskManager = new TaskManager(bot, config)
 
 
     bot.once("spawn", () => {
@@ -123,5 +149,6 @@ export async function stopBot(worker_id: number) {
 declare module "mineflayer" {
     interface Bot {
         worker_id: number
+        saveWorkerConfig: () => void
     }
 }

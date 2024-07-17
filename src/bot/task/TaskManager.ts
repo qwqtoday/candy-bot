@@ -2,8 +2,9 @@ import { Bot } from "mineflayer";
 import CiPutTask from "./tasks/CiPutTask";
 import { AbstractTask } from "./Task";
 import CiGetTossTask from "./tasks/CiGetTossTask";
+import WorkerConfig from "../config/WorkerConfig";
 
-const tasks = {
+export const tasks = {
     "ciPut": CiPutTask,
     "ciGetToss": CiGetTossTask
 } as const
@@ -11,15 +12,16 @@ const tasks = {
 export default class TaskManager {
     private bot: Bot
 
-    private taskConfig = {}
+    private config: WorkerConfig
     private tasks: InstanceType<typeof tasks[keyof typeof tasks]>[]
 
-    constructor(bot: Bot) {
+    constructor(bot: Bot, config: WorkerConfig) {
         this.bot = bot
+        this.config = config
 
         // Load tasks
         this.tasks = Object.entries(tasks)
-            .map(([name, task]) => new task(bot, this.taskConfig[name]))
+            .map(([name, task]) => new task(bot, this.config.tasks[name]))
     }
 
 

@@ -2,6 +2,9 @@ import { isMainThread, parentPort, workerData, Worker } from "worker_threads";
 import { StartBotMessage, MainThreadMessage, WorkerMessage } from "./messages";
 import { runningBots, startBot, stopBot } from "../bot/bot";
 import { scheduler } from "timers/promises";
+import { EventEmitter } from "events";
+
+
 
 export interface WorkerThread {
     _worker: Worker;
@@ -134,6 +137,8 @@ if (isMainThread) {
 }
 
 if (!isMainThread) {
+    EventEmitter.defaultMaxListeners = 0
+
     parentPort.on("message", (_msg) => {
         const msg: MainThreadMessage = _msg;
         switch (true) {
