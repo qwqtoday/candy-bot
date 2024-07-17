@@ -1,0 +1,4 @@
+services:
+  candy-bot:
+    build: docker/Dockerfile
+    restart: always
