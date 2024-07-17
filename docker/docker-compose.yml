@@ -4,3 +4,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     restart: always
+
+    volumes:
+      - ./data:/app/data
+      - ./cache:/app/cache
