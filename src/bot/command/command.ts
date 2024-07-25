@@ -7,6 +7,7 @@ import placeBlock from "./commands/placeBlock";
 import ci from "./commands/ci";
 import TaskManager from "../task/TaskManager";
 import toss from "./commands/toss";
+import msg from "./commands/msg";
 
 export interface CommandSource {
   senderName: string;
@@ -25,7 +26,8 @@ const commands: Command[] = [
   tp,
   placeBlock,
   ci,
-  toss
+  toss,
+  msg
 ] as const
 
 export function getCommandDispatcher(): CommandDispatcher<CommandSource> {
