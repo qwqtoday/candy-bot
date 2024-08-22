@@ -45,8 +45,8 @@ export async function startBot(worker_id: number) {
     }
 
     const bot = createBot({
-        host: "ab.natoriqct.xyz",
-        port: 25565,
+        host: "catgirl.hk",
+        port: 15801,
         username: `worker-${worker_id}`,
         auth: "microsoft",
         viewDistance: 10,
